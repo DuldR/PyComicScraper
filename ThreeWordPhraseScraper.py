@@ -2,7 +2,7 @@ import requests, bs4, os
 url = 'http://threewordphrase.com'
 
 #setting directory for saving file
-os.chdir("C:/Users/VF034781/Desktop/Sandbox/")
+os.chdir("Your Directory")
 os.makedirs('Comics', exist_ok=True)
 
 while not url.endswith('#'):

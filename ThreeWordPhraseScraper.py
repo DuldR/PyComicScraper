@@ -2,7 +2,7 @@ import requests, bs4, os
 url = 'http://threewordphrase.com'
 
 #setting directory for saving file
-os.chdir("Your Directory")
+os.chdir("Specified Directory")
 os.makedirs('Comics', exist_ok=True)
 
 while not url.endswith('#'):
@@ -14,8 +14,9 @@ while not url.endswith('#'):
     soup = bs4.BeautifulSoup(res.text, 'lxml')
 
     # identify .gif within website
-    for comicImg in soup.findAll("center"):
-        getImg = comicImg.findAll("img")
+    for comicImg in soup.findAll("div", {"align": "center"}):
+        for findImg in comicImg.findAll("table", {"width": "403"}):
+            getImg = findImg.findAll("img")
 
     # identify previous comic URL
     for comicPrev in soup.findAll("div", {"align": "center"}):
@@ -23,9 +24,11 @@ while not url.endswith('#'):
             for prevUrl in checkPrev.findAll("a"):
                 prevUrl = prevUrl['href']
 
-    if comicImg == []:
+    # ensure that img object has found a picture
+    if (comicImg == []) or (getImg == []):
         print('No image boys.')
 
+    # parse the comic url and verify it's valid
     else:
         try:
             comicUrl = "http://threewordphrase.com/" + getImg[0].get('src')
@@ -38,6 +41,7 @@ while not url.endswith('#'):
             url = 'http://threewordphrase.com' + prevUrl
             continue
 
+    #write the picture to the drive
     imageFile = open(os.path.join('Comics', os.path.basename(comicUrl)), 'wb')
     for chunk in res.iter_content(1000000):
         imageFile.write(chunk)
